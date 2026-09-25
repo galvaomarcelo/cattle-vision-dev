@@ -1,0 +1,146 @@
+CATTLE-VISION — RESUMO DOS EXPERIMENTOS YOLO
+
+DATASET ATUAL
+
+30 imagens DJI Air 3S, 4096 x 3072 px
+1.071 bovinos anotados
+29 imagens com bovinos + 1 imagem negativa
+Treino: 22 imagens / 951 bovinos
+Validação: 8 imagens / 120 bovinos
+Split por flight_group
+Classe única: cattle
+
+EXPERIMENTO 1 — YOLO11n @ 640 px
+Epochs: 30
+Batch: 4
+Precision: 0.784
+Recall: 0.292
+mAP50: 0.460
+mAP50-95: 0.167
+
+Observação:
+Muitos bovinos pequenos/distantes foram perdidos.
+
+EXPERIMENTO 2 — YOLO11n @ 1280 px
+Epochs: 30
+Batch: 4
+Precision: 0.824
+Recall: 0.475
+mAP50: 0.506
+mAP50-95: 0.208
+
+Comparação com 640:
+
+Precision: +0.040
+Recall: +0.183
+mAP50: +0.046
+mAP50-95: +0.041
+
+Conclusão:
+1280 px melhorou claramente a detecção, principalmente o recall.
+
+TESTES DE INFERÊNCIA — MODELO 1280
+Confidence 0.05: 367 detecções / 8 imagens; muitos falsos positivos.
+Confidence 0.10: menos falsos positivos, mas ainda vários falsos negativos.
+Confidence 0.20: 100 detecções / 8 imagens; poucos falsos positivos e alguns falsos negativos.
+
+Threshold preliminar para inspeção visual:
+confidence = 0.20
+
+PROBLEMA OBSERVADO
+
+O modelo detecta mais bovinos em 1280 px, mas também confunde pequenos
+fragmentos de solo/capim com bovinos, especialmente em imagens oblíquas.
+
+Hipótese:
+Bovinos muito pequenos no horizonte podem ter menos de ~8 px e fornecem
+pouca informação visual. O modelo pode aprender padrões muito pequenos
+que também aparecem em solo/capim.
+
+Essa hipótese ainda precisa ser testada. As anotações não devem ser alteradas
+antes de uma análise sistemática dos erros.
+
+PRÓXIMOS PASSOS
+Fazer error analysis das 8 imagens de validação.
+Identificar falsos positivos e falsos negativos.
+Avaliar tamanho e posição das bounding boxes problemáticas.
+Captar mais imagens, priorizando os tipos de cenas mais úteis para o treino.
+Manter o split por flight_group.
+Repetir os experimentos depois de aumentar o dataset.
+RESOLUÇÃO FUTURA
+
+Vale testar resolução maior que 1280, mas não é necessário treinar diretamente
+na resolução original 4096 x 3072 agora.
+
+Sugestão:
+
+1280: baseline atual
+1536: próximo teste possível
+1920: teste posterior, se houver evidência de benefício
+2560+: somente depois de aumentar o dataset e ter GPU disponível
+
+A resolução original é interessante para investigar pequenos objetos, mas o custo
+computacional cresce bastante. O ganho deve ser comparado com o benefício de
+simplesmente obter mais imagens de qualidade para treinamento.
+
+HARDWARE FUTURO
+
+Novo notebook:
+TULPAR T6 V3.6.1
+
+Intel Core i7-14700HX
+32 GB RAM
+NVIDIA RTX 5070
+1 TB SSD
+chegada prevista: 15 de outubro de 2026
+
+A nova GPU permitirá testar resoluções maiores e modelos maiores com muito mais
+eficiência.
+
+O próximo conjunto de imagens também deverá ser mais valioso que simplesmente
+aumentar a resolução: já foram identificados tipos de imagens mais interessantes
+para o treinamento.
+
+
+
+Experiment 1 — YOLO11n / 640
+--------------------------------
+Train images:       22
+Validation images:   8
+Train cattle:       951
+Validation cattle:  120
+
+Epochs:             30
+Batch:               4
+
+Precision:        0.784
+Recall:           0.292
+mAP50:            0.460
+mAP50-95:         0.167
+
+Inference tests:
+confidence 0.01 → 1666 detections
+confidence 0.05 →   57 detections
+confidence 0.10 →   18 detections
+confidence 0.25 →    x detections
+
+
+
+
+YOLO11n
+30 epochs
+1280 px
+
+Precision: 0.824
+Recall:    0.475
+mAP50:     0.506
+mAP50-95: 0.208
+
+confidence 0.05 → 367 detecções
+                 muitos falsos positivos
+
+confidence 0.10 → mais detecções, ainda alguns FP
+
+confidence 0.20 → 100 detecções
+                 poucos FP
+                 alguns FN

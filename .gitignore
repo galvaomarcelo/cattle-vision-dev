@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Raw drone imagery
+data/raw/images/
+*.JPG
+*.jpg
+*.jpeg
+*.png
+
+# Generated YOLO datasets
+data/yolo/
+data/annotations/cattle_yolo/
+data/annotations/test_sample_yolo/
+
+# Generated inspection/prediction outputs
+data/inspection/
+runs/
+
+# Large geospatial data
+data/dem/
+*.tif
+*.tiff
+
+# ML model weights
+*.pt
+*.pth
+*.onnx
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
